@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Imprimir Imagen 8.5 x 5.5</title>
+  <style>
+    @page {
+      size: letter portrait;
+      margin: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .marco {
+      width: 8.5in;
+      height: 5.5in;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: 2px dashed #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .marco img {
+      transition: transform 0.3s ease;
+      max-width: none;
+      max-height: none;
+    }
+
+    .controles {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      z-index: 999;
+    }
+
+    .controles input[type="range"] {
+      width: 100px;
+    }
+
+    @media print {
+      .controles {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Controles -->
+  <div class="controles no-print">
+    <input type="file" accept="image/*" id="fileInput"><br><br>
+    Zoom: <input type="range" id="zoom" min="0.1" max="2" step="0.05" value="1"><br><br>
+    <button onclick="rotarImagen()">Girar 90°</button>
+    <button onclick="window.print()">Imprimir</button>
+  </div>
+
+  <!-- Marco de impresión -->
+  <div class="marco">
+    <img id="imagen" src="" alt="Imagen">
+  </div>
+
+  <!-- Script -->
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const imagen = document.getElementById('imagen');
+    const zoom = document.getElementById('zoom');
+    let rotacion = 0;
+
+    fileInput.addEventListener('change', function () {
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          imagen.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    zoom.addEventListener('input', actualizarTransformacion);
+
+    function rotarImagen() {
+      rotacion = (rotacion + 90) % 360;
+      actualizarTransformacion();
+    }
+
+    function actualizarTransformacion() {
+      const escala = zoom.value;
+      imagen.style.transform = `scale(${escala}) rotate(${rotacion}deg)`;
+    }
+  </script>
+
+</body>
+</html>
